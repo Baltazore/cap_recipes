@@ -1,0 +1,55 @@
+upstream thin-cluster-<%= "#{application}-#{rails_env}".gsub(/[^\w\W]/, '-') %> {
+    server unix:<%= current_path %>/tmp/thin.0.sock;
+    server unix:<%= current_path %>/tmp/thin.1.sock;
+}
+#server {
+#            listen   80;
+#            server_name  www.domain.com;
+#            rewrite ^/(.*) http://domain.com permanent;
+#           }
+
+
+server {
+    listen   80;
+    server_name matraskin.by www.matraskin.by;
+ 
+    access_log <%= deploy_to %>/shared/log/access.log;
+    error_log  <%= deploy_to %>/shared/log/error.log;
+    root       <%= deploy_to %>/current/public;
+    index      index.html;
+ 
+    location ~ ^/assets/ {
+              expires 1y;
+              add_header Cache-Control public;
+              gzip_static on;
+              add_header ETag "";
+              break;
+        }
+
+
+    location / {
+        proxy_set_header  X-Real-IP  $remote_addr;
+        proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header  Host $http_host;
+        proxy_redirect    off;
+#        try_files /system/maintenance.html $uri $uri/index.html $uri.html @ruby;
+
+                         if (-f $request_filename/index.html) {
+                                           rewrite (.*) $1/index.html break;
+                          }
+
+                          if (-f $request_filename.html) {
+                                           rewrite (.*) $1.html break;
+                          }
+
+                          if (!-f $request_filename) {
+                                           proxy_pass http://thin-cluster-<%= "#{application}-#{rails_env}".gsub(/[^\w\W]/, '-') %>;
+                                           break;
+                          }
+    }
+ 
+ #   location @ruby {
+ #       proxy_pass http://thin-cluster;
+ #   }
+}
+

@@ -1,0 +1,18 @@
+---
+    environment: <%= rails_env %>
+    chdir: <%= current_path %>
+    address: <%= private_pub_host %>
+    user: <%= private_pub_user %>
+    group: <%= private_pub_group %>
+    port: <%= private_pub_port %>
+    pid: <%= private_pub_pid %>
+    rackup: <%= current_path %>/private_pub.ru
+    log: <%= current_path %>/log/private_pub.log
+    max_conns: 1024
+    timeout: 30
+    max_persistent_conns: 512
+    daemonize: true<% if private_pub_ssl %>
+    ssl: true
+    ssl_key_file: <%= ssl_key_file%>
+    ssl_cert_file: <%= ssl_crt %>
+    <% end %>

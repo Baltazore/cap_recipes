@@ -1,0 +1,20 @@
+#!/bin/bash
+bakdir=/home/<%= user %>/<%= database_backup_folder_name %>
+bakfile_name=<%= mysql_database %>_bak_$(date +%Y_%m_%d_%H_%M).sql
+bakfile=$bakdir/$bakfile_name
+<% if database_backup_keep_backups_count %>
+keep_backups=<%= database_backup_keep_backups_count %>
+<% end %>
+
+mkdir -p $bakdir
+echo $bakfile
+mysqldump -u<%= mysql_user %> -p<%= mysql_password %> <%= mysql_database %> -r $bakfile
+cd $bakdir && tar czf $bakfile_name.tar.gz $bakfile_name
+rm $bakfile
+
+# Syncronize with amazon storage
+s3cmd sync --acl-private $bakdir s3://RLP_BACKUPS/
+
+<% if database_backup_keep_backups_count %>
+cd $bakdir && rm $(ls | head -n-$keep_backups)
+<% end %>

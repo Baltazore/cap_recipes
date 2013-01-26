@@ -1,0 +1,9 @@
+#!/bin/bash
+dir_to_backup=<%= files_backup_folder_for_backup %>
+items_to_include=<%= files_backup_items_to_include.join(',') %>
+bakdir_name=<%= files_backup_folder_name %>
+bucket_name=<%= bucket_name %>
+
+# Syncronize with amazon storage
+eval "s3cmd sync --acl-private -r --delete-removed $dir_to_backup/{$items_to_include} s3://$bucket_name/$bakdir_name/"
+

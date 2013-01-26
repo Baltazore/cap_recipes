@@ -1,0 +1,3 @@
+webserver: bundle exec thin start -C <%= thin_config_file %> -p $PORT
+lesson_server: bundle exec ruby lesson_server/server.rb <%= rails_env %>
+faye: RAILS_ENV=<%= rails_env %> rackup private_pub.ru -s thin -E <%= rails_env %>
