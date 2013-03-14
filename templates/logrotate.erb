@@ -1,0 +1,10 @@
+<%= shared_path %>/log/<%= rails_env %>.log {
+        rotate 3
+        weekly
+        minsize 1M
+        missingok
+        copytruncate<%#create 664 <%= "#{user} #{user}" %>
+        notifempty
+        compress
+        delaycompress
+}
