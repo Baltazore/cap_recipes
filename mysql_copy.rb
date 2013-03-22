@@ -1,4 +1,4 @@
-set_default(:mysql_copy_shared_folders) { 'system' }
+set :mysql_copy_shared_folders, 'system'
 
 namespace :mysql_copy do
   desc <<-DESC
